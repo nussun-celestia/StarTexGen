@@ -49,12 +49,12 @@ def temp_to_color(Temperature):
                 Blue = 255
     return([Red, Green, Blue])
 
-def create_noise(size):
-        circumference = (2*math.pi)*(float(values['Radius'])*695700)
+def create_noise(size, temperature, radius):
+        circumference = (2*math.pi)*(float(radius)*695700)
         scale = 10.0
         width = size
         height = int(size/2)
-        if int(values['Temperature']) < 3700:
+        if int(temperature) < 3700:
             freq = ((1500/circumference)*6.275)+0.03
         else:
             freq = (1500/circumference)*6.275
@@ -133,32 +133,32 @@ def create_noise(size):
 
 
         scale2 = 10.0
-        if int(values['Temperature']) < 5772:
-            freq2 = 1154.4/float(values['Temperature'])
-            if int(values['Temperature']) <= 3700:
+        if int(temperature) < 5772:
+            freq2 = 1154.4/float(temperature)
+            if int(temperature) <= 3700:
                 freq2 = freq2+0.6
-        elif int(values['Temperature']) == 5772:
+        elif int(temperature) == 5772:
             freq2 = 0.2
         else:
-            freq2 = float(values['Temperature'])*(0.2/5772)
+            freq2 = float(temperature)*(0.2/5772)
         freq2 = freq2/(values['Multiplier']/100)
         octaves2 = 6
         
-        if int(values['Temperature']) < 5772:
-            persistence2 = float(values['Temperature'])*(0.5/5772)
-        elif int(values['Temperature']) == 5772:
+        if int(temperature) < 5772:
+            persistence2 = float(temperature)*(0.5/5772)
+        elif int(temperature) == 5772:
             persistence2 = 0.5
         else:
-            persistence2 = 2886/float(values['Temperature'])
+            persistence2 = 2886/float(temperature)
 
-        if int(values['Temperature']) < 5772:
+        if int(temperature) < 5772:
             lacunarity2 = 1.5
-            if int(values['Temperature']) <= 3700:
-                lacunarity2 = float(values['Temperature'])*(1.5/5772)
-        elif int(values['Temperature']) == 5772:
+            if int(temperature) <= 3700:
+                lacunarity2 = float(temperature)*(1.5/5772)
+        elif int(temperature) == 5772:
             lacunarity2 = 1.5
         else:
-            lacunarity2 = 8658/float(values['Temperature'])
+            lacunarity2 = 8658/float(temperature)
 
         noise_img2 = Image.new('RGB', (width, height))
 
@@ -184,20 +184,20 @@ def create_noise(size):
                 persistence=persistence2,
                 lacunarity=lacunarity2
             )
-            if int(values['Temperature']) <= 5200:
+            if int(temperature) <= 5200:
 
                 a1 = 4000
                 b1 = 1600
                 a2 = 5200
                 b2 = 1200
-                a = float(values['Temperature'])
+                a = float(temperature)
                 b = (b1+(a-a1)*((b2-b1)/(a2-a1)))
-                z_normalized2 = (z2+1)/2*float(values['Temperature'])*(b/5772)
+                z_normalized2 = (z2+1)/2*float(temperature)*(b/5772)
                 # print(b)
-                if int(values['Temperature']) <= 3700:
-                    z_normalized2 = (z2+1)/2*float(values['Temperature'])*(2000/5772)
+                if int(temperature) <= 3700:
+                    z_normalized2 = (z2+1)/2*float(temperature)*(2000/5772)
             else:
-                z_normalized2 = (z2+1)/2*float(values['Temperature'])*(1200/5772)
+                z_normalized2 = (z2+1)/2*float(temperature)*(1200/5772)
             z_normalized2 = z_normalized2/(values['Multiplier']/100)
 
             color = (int(z_normalized2), int(z_normalized2), int(z_normalized2))
@@ -207,11 +207,11 @@ def create_noise(size):
             noise_img2.putpixel((x, y), color2)
 
         scale2b = 10.0
-        freq2b = 1154.4/float(values['Temperature'])
+        freq2b = 1154.4/float(temperature)
         freq2b = freq2b+0.6
         octaves2b = 6
-        persistence2b = float(values['Temperature'])*(0.5/5772)
-        lacunarity2b = float(values['Temperature'])*(1.5/5772)
+        persistence2b = float(temperature)*(0.5/5772)
+        lacunarity2b = float(temperature)*(1.5/5772)
 
         noise_img2b = Image.new('RGB', (width, height))
 
@@ -237,7 +237,7 @@ def create_noise(size):
                 persistence=persistence2b,
                 lacunarity=lacunarity2b
             )
-            z_normalized2b = (z2b+1)/2*float(values['Temperature'])*(1325/5772)
+            z_normalized2b = (z2b+1)/2*float(temperature)*(1325/5772)
 
             color = (int(z_normalized2b), int(z_normalized2b), int(z_normalized2b))
 
@@ -245,8 +245,8 @@ def create_noise(size):
 
             noise_img2b.putpixel((x, y), color2b)
 
-        temperature = eval(values['Temperature'])
-        colors = temp_to_color(temperature)
+        temperature2 = float(temperature)
+        colors = temp_to_color(temperature2)
         red = round(colors[0])
         green = round(colors[1])
         blue = round(colors[2])
@@ -262,18 +262,18 @@ def create_noise(size):
         detail_noise_new = brighter_detail.enhance(1.75)
         contrast2 = ImageEnhance.Contrast(noise_img2)
         new_noise2 = contrast2.enhance(2)
-        if int(values['Temperature']) <= 5200:
+        if int(temperature) <= 5200:
             c1 = 4000
             d1 = 0.6
             c2 = 5772
             d2 = 1
-            c = float(values['Temperature'])
+            c = float(temperature)
             d = (d1+(c-c1)*((d2-d1)/(c2-c1)))
             contrast_spot2 = ImageEnhance.Contrast(new_noise2)
             contrast_spot_noise2 = contrast_spot2.enhance(d)
             noised = ImageChops.multiply(contrast_spot_noise2, new_noise)
             noised_final = ImageChops.multiply(img_new, noised)
-            if int(values['Temperature']) <= 3700:
+            if int(temperature) <= 3700:
                 brighter = ImageEnhance.Brightness(new_noise2)
                 spot_noise_new = brighter.enhance(1.25)
                 spots = ImageChops.multiply(spot_noise_new, noise_img2b)
@@ -281,7 +281,7 @@ def create_noise(size):
                 contrast_spot_noise = contrast_spot.enhance(0.6)
                 noised = ImageChops.multiply(contrast_spot_noise, new_noise)
                 noised_final = ImageChops.multiply(img_new, noised)
-        elif int(values['Temperature']) >= 7500:
+        elif int(temperature) >= 7500:
             noised_final = ImageChops.multiply(img_new, new_noise)
         else:
             noised = ImageChops.multiply(new_noise2, new_noise)
@@ -291,7 +291,11 @@ def create_noise(size):
 
 sg.theme('DarkGrey6')
 
+menu_def = [['Edit', ['Presets', ['Zeta Ophiuchi', 'Regulus', 'Sirius', 'Tabit', 'Sun', 'Epsilon Eridani', 'Proxima Centauri', ], 'Reset'], ],      
+            ['Help', 'About...'], ]
+
 layout = [
+    [sg.Menu(menu_def)],
     [sg.Text('Temperature (Kelvin):'), sg.Input(key='Temperature', default_text='5772')],
     [sg.Text('Radius of star (R☉):'), sg.Input(key='Radius', default_text='1')],
     [sg.Checkbox('Virtual Texture', default=False, key='TexType')],
@@ -315,7 +319,69 @@ while True:
     if event == sg.WIN_CLOSED or event == 'Exit':
         os.remove('temp.png')
         break
+    
+    if event == 'About...':
+        window.disappear()
+        sg.popup('About this program:', "This is a program that generates star textures for use in Celestia or whatever program you like. It's still a work-in-progress and the code is pretty messy.",
+                 '', 'Current version: Version 0.1')
+        window.reappear()
+            
+    if event == 'Zeta Ophiuchi':
+        window.FindElement('Temperature').Update(34000)
+        window.FindElement('Radius').Update(8.5)
+        true_final = create_noise(512, 34000, 8.5)
+        true_final.save("temp.png")
+        window['Preview'].update("temp.png")
 
+    if event == 'Regulus':
+        window.FindElement('Temperature').Update(12460)
+        window.FindElement('Radius').Update(3.092)
+        true_final = create_noise(512, 12460, 3.092)
+        true_final.save("temp.png")
+        window['Preview'].update("temp.png")
+
+    if event == 'Sirius':
+        window.FindElement('Temperature').Update(9940)
+        window.FindElement('Radius').Update(1.711)
+        true_final = create_noise(512, 9940, 1.711)
+        true_final.save("temp.png")
+        window['Preview'].update("temp.png")
+
+    if event == 'Tabit':
+        window.FindElement('Temperature').Update(6516)
+        window.FindElement('Radius').Update(1.323)
+        true_final = create_noise(512, 6516, 1.323)
+        true_final.save("temp.png")
+        window['Preview'].update("temp.png")
+
+    if event == 'Sun':
+        window.FindElement('Temperature').Update(5772)
+        window.FindElement('Radius').Update(1)
+        true_final = create_noise(512, 5772, 1)
+        true_final.save("temp.png")
+        window['Preview'].update("temp.png")
+
+    if event == 'Epsilon Eridani':
+        window.FindElement('Temperature').Update(5084)
+        window.FindElement('Radius').Update(0.735)
+        true_final = create_noise(512, 5084, 0.735)
+        true_final.save("temp.png")
+        window['Preview'].update("temp.png")
+
+    if event == 'Proxima Centauri':
+        window.FindElement('Temperature').Update(3042)
+        window.FindElement('Radius').Update(0.1542)
+        true_final = create_noise(512, 3042, 0.1542)
+        true_final.save("temp.png")
+        window['Preview'].update("temp.png")
+
+    if event == 'Reset':
+        window.FindElement('Temperature').Update(5772)
+        window.FindElement('Radius').Update(1)
+        true_final = create_noise(512, 5772, 1)
+        true_final.save("temp.png")
+        window['Preview'].update("temp.png")
+        
     if values['TexType'] == True:
         window.FindElement('TexSize').Update(values=('16384','32768','65536'))
     else:
@@ -324,7 +390,7 @@ while True:
     if event == 'Randomize':
         window.FindElement('Seed').Update(random.randint(-20000,20000))
     if event == 'Refresh':
-        true_final = create_noise(512)
+        true_final = create_noise(512, values['Temperature'], values['Radius'])
         true_final.save("temp.png")
         window['Preview'].update("temp.png")
 
@@ -335,8 +401,8 @@ while True:
         elif values['TexSize'] == '':
             window['Output'].update('Error: missing texture resolution!')
         else:
-            temperature = eval(values['Temperature'])
-            colors = temp_to_color(temperature)
+            temperature2 = eval(values['Temperature'])
+            colors = temp_to_color(temperature2)
             red = round(colors[0])
             green = round(colors[1])
             blue = round(colors[2])
@@ -346,7 +412,7 @@ while True:
             if values['Filename'] == '':
                 window['Output'].update('Error: missing filename!')
             else:
-                true_final = create_noise(size)
+                true_final = create_noise(size, values['Temperature'], values['Radius'])
                 true_final.save("%s.png" % values['Filename'])
                 window['Output'].update('Texture generated!')
 window.close()
