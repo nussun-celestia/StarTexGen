@@ -214,6 +214,32 @@ def create_noise(size, temperature, radius, colors, spectrum=None):
                 persistence=persistence,
                 lacunarity=lacunarity
             )
+            #imgx = int(size); imgy = int(size/2)
+            #image = Image.new("RGB", (imgx, imgy))
+            #draw = ImageDraw.Draw(image)
+            #pixels = image.load()
+            #n = 100 # of seed points
+            #m = 0 # random.randint(0, n - 1) # degree (?)
+            #seedsX = [random.randint(0, imgx - 1) for i in range(n)]
+            #seedsY = [random.randint(0, imgy - 1) for i in range(n)]
+            #maxDist = 0.0
+            #for ky in range(imgy):
+            #    for kx in range(imgx):
+            #        # create a sorted list of distances to all seed points
+            #        dists = [math.hypot(seedsX[i] - kx, seedsY[i] - ky) for i in range(n)]
+            #        dists.sort()
+            #        if dists[m] > maxDist: maxDist = dists[m]
+
+            #for ky in range(imgy):
+            #    for kx in range(imgx):
+            #        # create a sorted list of distances to all seed points
+            #        dists = [math.hypot(seedsX[i] - kx, seedsY[i] - ky) for i in range(n)]
+            #        dists.sort()
+            #        c = int(round(255 * dists[m] / maxDist))
+            #        pixels[kx, ky] = (c, c, c)
+            #            
+            #z = c
+            
             z_normalized = (z + 1) / 2
 
             color = (int((z+1)/2*430), int((z+1)/2*430), int((z+1)/2*430))
@@ -451,6 +477,7 @@ layout = [
     [sg.Text('Seed:'), sg.Input(key='Seed', size=(25, 1), default_text='0'), sg.Button('Randomize')],
     [sg.Text('Starspot frequency multiplier:'), sg.Slider(range=(80,120), orientation='horizontal', key='Multiplier', default_value=100)],
     [sg.Text('Colors:'), sg.InputCombo(('D65', 'Spectrum'), size=(25, 1), key='TexColor', default_value='D65')],
+    [sg.Text('Spectrum:'), sg.InputCombo(('None', 'Sun', 'Vega'), size=(25, 1), key='Spectrum', default_value='None')],
     [sg.Text('File name:'), sg.Input(key='Filename')],
     [sg.Text('')],
     [sg.Text('Preview:')],
@@ -478,6 +505,7 @@ while True:
     if event == "Sun (real spectrum)":
         window.FindElement('Temperature').Update(5772)
         window.FindElement('Radius').Update(1)
+        window.FindElement('Spectrum').Update('Sun')
         true_final = create_noise(512, 5772, 1, values['TexColor'], spectrum=spectra["Sun"])
         true_final.save("temp.png")
         window['Preview'].update("temp.png")
@@ -492,6 +520,7 @@ while True:
     if event == "Vega (real spectrum)":
         window.FindElement('Temperature').Update(9602)
         window.FindElement('Radius').Update(2.818)
+        window.FindElement('Spectrum').Update('Vega')
         true_final = create_noise(512, 9602, 1, values['TexColor'], spectrum=spectra["Vega"])
         true_final.save("temp.png")
         window['Preview'].update("temp.png")
@@ -567,7 +596,12 @@ while True:
     if event == 'Randomize':
         window.FindElement('Seed').Update(random.randint(-20000,20000))
     if event == 'Refresh':
-        true_final = create_noise(512, values['Temperature'], values['Radius'], values['TexColor'])
+        if values['Spectrum'] == 'None':
+            true_final = create_noise(512, values['Temperature'], values['Radius'], values['TexColor'])
+        if values['Spectrum'] == 'Sun':
+            true_final = create_noise(512, values['Temperature'], values['Radius'], values['TexColor'], spectrum=spectra["Sun"])
+        if values['Spectrum'] == 'Vega':
+            true_final = create_noise(512, values['Temperature'], values['Radius'], values['TexColor'], spectrum=spectra["Vega"])
         true_final.save("temp.png")
         window['Preview'].update("temp.png")
 
@@ -578,18 +612,16 @@ while True:
         elif values['TexSize'] == '':
             window['Output'].update('Error: missing texture resolution!')
         else:
-            temperature2 = eval(values['Temperature'])
-            colors = temp_to_color(temperature2)
-            red = round(colors[0])
-            green = round(colors[1])
-            blue = round(colors[2])
             size = round(eval(values['TexSize']))
-            img_new = Image.new("RGB", (size, round(size/2)), (red, green, blue))
-            draw = ImageDraw.Draw(img_new)
             if values['Filename'] == '':
                 window['Output'].update('Error: missing filename!')
             else:
-                true_final = create_noise(size, values['Temperature'], values['Radius'], values['TexColor'])
-                true_final.save("%s.png" % values['Filename'])
+                if values['Spectrum'] == 'None':
+                    true_final = create_noise(size, values['Temperature'], values['Radius'], values['TexColor'])
+                if values['Spectrum'] == 'Sun':
+                    true_final = create_noise(size, values['Temperature'], values['Radius'], values['TexColor'], spectrum=spectra["Sun"])
+                if values['Spectrum'] == 'Vega':
+                    true_final = create_noise(size, values['Temperature'], values['Radius'], values['TexColor'], spectrum=spectra["Vega"])
+                true_final.save('%s.png' % values['Filename'])
                 window['Output'].update('Texture generated!')
 window.close()
