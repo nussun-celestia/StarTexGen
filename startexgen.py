@@ -213,33 +213,7 @@ def create_noise(size, temperature, radius, colors, spectrum=None):
                 octaves=octaves,
                 persistence=persistence,
                 lacunarity=lacunarity
-            )
-            #imgx = int(size); imgy = int(size/2)
-            #image = Image.new("RGB", (imgx, imgy))
-            #draw = ImageDraw.Draw(image)
-            #pixels = image.load()
-            #n = 100 # of seed points
-            #m = 0 # random.randint(0, n - 1) # degree (?)
-            #seedsX = [random.randint(0, imgx - 1) for i in range(n)]
-            #seedsY = [random.randint(0, imgy - 1) for i in range(n)]
-            #maxDist = 0.0
-            #for ky in range(imgy):
-            #    for kx in range(imgx):
-            #        # create a sorted list of distances to all seed points
-            #        dists = [math.hypot(seedsX[i] - kx, seedsY[i] - ky) for i in range(n)]
-            #        dists.sort()
-            #        if dists[m] > maxDist: maxDist = dists[m]
-
-            #for ky in range(imgy):
-            #    for kx in range(imgx):
-            #        # create a sorted list of distances to all seed points
-            #        dists = [math.hypot(seedsX[i] - kx, seedsY[i] - ky) for i in range(n)]
-            #        dists.sort()
-            #        c = int(round(255 * dists[m] / maxDist))
-            #        pixels[kx, ky] = (c, c, c)
-            #            
-            #z = c
-            
+            )            
             z_normalized = (z + 1) / 2
 
             color = (int((z+1)/2*430), int((z+1)/2*430), int((z+1)/2*430))
@@ -347,7 +321,6 @@ def create_noise(size, temperature, radius, colors, spectrum=None):
                 a = float(temperature)
                 b = (b1+(a-a1)*((b2-b1)/(a2-a1)))
                 z_normalized2 = (z2+1)/2*float(temperature)*(b/5772)
-                # print(b)
                 if int(temperature) <= 3700:
                     z_normalized2 = (z2+1)/2*float(temperature)*(2000/5772)
             else:
@@ -509,13 +482,6 @@ while True:
         true_final = create_noise(512, 5772, 1, values['TexColor'], spectrum=spectra["Sun"])
         true_final.save("temp.png")
         window['Preview'].update("temp.png")
-
-    # if event == "Sun (blackbody spectrum)":
-        # window.FindElement('Temperature').Update(5772)
-        # window.FindElement('Radius').Update(1)
-        # true_final = create_noise(512, 5772, 1)
-        # true_final.save("temp.png")
-        # window['Preview'].update("temp.png")
 
     if event == "Vega (real spectrum)":
         window.FindElement('Temperature').Update(9602)
