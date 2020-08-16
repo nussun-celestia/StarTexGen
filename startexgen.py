@@ -450,7 +450,8 @@ layout = [
     [sg.Text('Seed:'), sg.Input(key='Seed', size=(25, 1), default_text='0'), sg.Button('Randomize')],
     [sg.Text('Starspot frequency multiplier:'), sg.Slider(range=(80,120), orientation='horizontal', key='Multiplier', default_value=100)],
     [sg.Text('Colors:'), sg.InputCombo(('D65', 'Spectrum'), size=(25, 1), key='TexColor', default_value='D65')],
-    [sg.Text('Spectrum:'), sg.InputCombo(('None', 'Sun', 'Vega'), size=(25, 1), key='Spectrum', default_value='None')],
+    #[#sg.Text('Spectrum:'),
+    [sg.InputCombo(('None', 'Sun', 'Vega'), size=(25, 1), key='Spectrum', default_value='None', visible=False)],
     [sg.Text('File name:'), sg.Input(key='Filename')],
     [sg.Text('')],
     [sg.Text('Preview:')],
@@ -461,6 +462,7 @@ layout = [
 window = sg.Window('Star Texture Generator', layout, icon="icon.ico")
 while True:
     event, values = window.read()
+    #window.FindElement('Spectrum').Update(visible=False)
     img_temp = Image.new("RGB", (512, 256), (255, 242, 230))
     draw = ImageDraw.Draw(img_temp)
     img_temp.save("temp.png")
