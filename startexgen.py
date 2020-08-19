@@ -183,9 +183,9 @@ def create_noise(size, temperature, radius, colors, spectrum=None):
         width = size
         height = int(size/2)
         if int(temperature) < 3700:
-            freq = ((1500/circumference)*6.275)+0.03
+            freq = ((1500/circumference)*7.986)+0.03
         else:
-            freq = (1500/circumference)*6.275
+            freq = (1500/circumference)*7.986
         octaves = 6
         persistence = 0.5
         lacunarity = 1.5
@@ -216,9 +216,20 @@ def create_noise(size, temperature, radius, colors, spectrum=None):
             )            
             z_normalized = (z + 1) / 2
 
-            color = (int((z+1)/2*430), int((z+1)/2*430), int((z+1)/2*430))
+            z_normalized_b = 1-z_normalized
 
-            color = color
+            color_a = (int(z_normalized_b*255), int(z_normalized_b*255), int(z_normalized_b*255))
+
+            color_b = (int(z_normalized*255), int(z_normalized*255), int(z_normalized*255))
+
+            if z_normalized < .5:
+                color = color_a
+            else:
+                color = color_b
+    
+            #color = (int((z+1)/2*430), int((z+1)/2*430), int((z+1)/2*430))
+
+            #color = color
 
             noise_img.putpixel((x, y), color)
 
@@ -312,6 +323,7 @@ def create_noise(size, temperature, radius, colors, spectrum=None):
                 persistence=persistence2,
                 lacunarity=lacunarity2
             )
+                
             if int(temperature) <= 5200:
 
                 a1 = 4000
@@ -321,15 +333,32 @@ def create_noise(size, temperature, radius, colors, spectrum=None):
                 a = float(temperature)
                 b = (b1+(a-a1)*((b2-b1)/(a2-a1)))
                 z_normalized2 = (z2+1)/2*float(temperature)*(b/5772)
+                #z_normalized2_b = (1-((z2+1)/2))*float(temperature)*(b/5772)
                 if int(temperature) <= 3700:
                     z_normalized2 = (z2+1)/2*float(temperature)*(2000/5772)
+                    #z_normalized2_b = (1-((z2+1)/2))*float(temperature)*(2000/5772)
             else:
                 z_normalized2 = (z2+1)/2*float(temperature)*(1200/5772)
+                #z_normalized2_b = (1-((z2+1)/2))*float(temperature)*(1200/5772)
             z_normalized2 = z_normalized2/(values['Multiplier']/100)
 
-            color = (int(z_normalized2), int(z_normalized2), int(z_normalized2))
 
-            color2 = color
+
+
+            #print(z_normalized2_b)
+
+            #color2_a = (int(z_normalized2_b), int(z_normalized2_b), int(z_normalized2_b))
+
+            color2_b = (int(z_normalized2), int(z_normalized2), int(z_normalized2))
+
+            #if (z2+1)/2 < .5:
+                #color2 = color2_b
+            #else:
+            color2 = color2_b
+
+            # color = (int(z_normalized2), int(z_normalized2), int(z_normalized2))
+
+            # color2 = color
 
             noise_img2.putpixel((x, y), color2)
 
@@ -391,7 +420,9 @@ def create_noise(size, temperature, radius, colors, spectrum=None):
         sharp = ImageEnhance.Sharpness(noise_img)
         sharp_noise = sharp.enhance(2)
         contrast = ImageEnhance.Contrast(sharp_noise)
-        new_noise = contrast.enhance(0.125)
+        new_noise_contrast = contrast.enhance(0.175)
+        new_noise_bright = ImageEnhance.Brightness(new_noise_contrast)
+        new_noise = new_noise_bright.enhance(1.25)
         contrast_detail = ImageEnhance.Contrast(noise_detail)
         detail_noise = contrast_detail.enhance(0.075)
         brighter_detail = ImageEnhance.Brightness(detail_noise)
