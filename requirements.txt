@@ -1,0 +1,4 @@
+noise
+numpy
+Pillow
+PySimpleGUI
